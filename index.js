@@ -17,6 +17,7 @@ login(login_conf, function callback (err, api) {
     api.listen(function callback(err, message) {
       if(!err) {
         if(message.body == 'Bobi?') api.sendMessage(message.senderName+'?', message.threadID);
+        if(message.body.match(/pute/g)) api.sendMessage('C\'est '+message.senderName+' la pute', message.threadID);
         if(message.body == 'Biere?') api.sendMessage('Chaud!', message.threadID);
       }
     });
