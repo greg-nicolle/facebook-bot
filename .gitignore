@@ -4,3 +4,4 @@ npm-debug.log
 .nvmrc
 
 login_conf.json
+*.db

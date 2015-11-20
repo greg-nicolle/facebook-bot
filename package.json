@@ -10,9 +10,17 @@
   "author": "greg-nicolle",
   "license": "ISC",
   "dependencies": {
-    "bluebird": "^3.0.2",
+    "bluebird": "^3.0.3",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
-    "facebook-chat-api": "^1.0.2"
+    "facebook-chat-api": "^1.0.2",
+    "sqlite3": "^3.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/greg-nicolle/facebook-bot"
+  },
+  "engines": {
+    "node": "~4.2.2"
   }
 }

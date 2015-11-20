@@ -4,12 +4,16 @@ var program = require('commander'),
 	P = require('bluebird'),
 	login = P.promisifyAll(require("facebook-chat-api"));
 
+var db = require('./db.js');
+
 var login_conf = require('./login_conf.json');
 
 program
   .version(require('./package.json').version)
   .parse(process.argv);
- 
+
+var threadID = 868092476613506;
+
 // Create simple echo bot 
 login(login_conf, function callback (err, api) {
     if(err) return console.error(err);
@@ -18,9 +22,10 @@ login(login_conf, function callback (err, api) {
       if(!err) {
         console.log(message);
         if(message.body) {
+          db.newMessage(message);
           if (message.body == 'Bobi?') api.sendMessage(message.senderName + '?', message.threadID);
           if (message.body.match(/pute/g)) api.sendMessage('C\'est ' + message.senderName + ' la pute', message.threadID);
-          if (message.body == 'Biere?') api.sendMessage('Chaud!', message.threadID);
+          if (message.body == 'Biere?') api.sendMessage('C\'est mort aujourd\'hui c\'est beaujolais!', message.threadID);
           if (message.body.match(/[?]/g)) api.sendMessage(Math.floor((Math.random() * 10))%2 ? 'oui' : 'non', message.threadID);
         }
       }
