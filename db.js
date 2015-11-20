@@ -14,3 +14,14 @@ exports.newMessage = function(message) {
   stmt.run(message.threadID, message.senderID, message.body, message.threadName, message.messageID, message.timestamp);
   stmt.finalize();
 };
+
+exports.getUsers = function() {
+  var stmt = "SELECT * FROM user_info";
+  db.get(stmt, function (e, r) {
+    if(e) {
+      util.log("ERROR - " + e);
+    } else if(r) {
+
+    }
+  });
+};

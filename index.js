@@ -26,7 +26,17 @@ login(login_conf, function callback (err, api) {
           if (message.body == 'Bobi?') api.sendMessage(message.senderName + '?', message.threadID);
           if (message.body.match(/pute/g)) api.sendMessage('C\'est ' + message.senderName + ' la pute', message.threadID);
           if (message.body == 'Biere?') api.sendMessage('C\'est mort aujourd\'hui c\'est beaujolais!', message.threadID);
-          if (message.body.match(/[?]/g)) api.sendMessage(Math.floor((Math.random() * 10))%2 ? 'oui' : 'non', message.threadID);
+          if (message.body.match(/[?]/g)) {
+            if(message.body.match(/heure/g)) {
+              api.sendMessage('vers '+Math.floor((Math.random() * 100))%24+' heure', message.threadID);
+            } else if(message.body.match(/quand/g)||message.body.match(/Quand/g)) {
+              api.sendMessage('Dans '+Math.floor((Math.random() * 100))%59+' minutes', message.threadID);
+            } else if(message.body.match(/qui/g)||message.body.match(/Qui/g)) {
+              api.sendMessage(''+message.participantNames[Math.floor((Math.random() * 100))%message.participantNames.length-1]+'', message.threadID);
+            } else {
+              api.sendMessage(Math.floor((Math.random() * 10))%2 ? 'oui' : 'non', message.threadID);
+            }
+          }
         }
       }
     });
