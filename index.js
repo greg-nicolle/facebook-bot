@@ -8,6 +8,8 @@ var db = require('./db.js');
 
 var login_conf = require('./login_conf.json');
 
+var insults = require('./insults.json');
+
 program
   .version(require('./package.json').version)
   .parse(process.argv);
