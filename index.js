@@ -4,6 +4,8 @@ var program = require('commander'),
     P = require('bluebird'),
     login = P.promisifyAll(require("facebook-chat-api"));
 
+require('./lib.js');
+
 var db = require('./db.js');
 
 var login_conf = require('./login_conf.json');
@@ -26,7 +28,7 @@ login(login_conf, function callback(err, api) {
       if (message.body) {
 
         new Promise(function (resolve, reject) {
-          insults.some(ins => message.body.toLowerCase().match(new RegExp(ins, 'g')))? reject(message) : resolve(message)
+          insults.some(ins => message.body.nrml().match(new RegExp(ins, 'g')))? reject(message) : resolve(message)
         })
             .catch(function (msg) {
               api.sendMessage(msg.senderName + ' c\'est pas bien d\'insulter les gens', msg.threadID);
@@ -34,15 +36,15 @@ login(login_conf, function callback(err, api) {
             })
             .then(function (msg) {
               if (msg.body.match(/[?]/g)) {
-                if (msg.body.toLowerCase().match(/heure/g) && msg.body.length > 10) {
+                if (msg.body.nrml().match(/heure/g) && msg.body.length > 10) {
                   api.sendMessage('vers ' + Math.floor((Math.random() * 100)) % 24 + ' heure', msg.threadID);
-                } else if (msg.body.toLowerCase().match(/quand/g) && msg.body.length > 10) {
+                } else if (msg.body.nrml().match(/quand/g) && msg.body.length > 10) {
                   api.sendMessage('Dans ' + Math.floor((Math.random() * 100)) % 59 + ' minutes', msg.threadID);
-                } else if (msg.body.toLowerCase().match(/qui/g) && msg.body.length > 10) {
+                } else if (msg.body.nrml().match(/qui/g) && msg.body.length > 10) {
                   api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length - 1] + '', msg.threadID);
-                } else if (msg.body.toLowerCase().match(/biere/g) && msg.body.length > 10){
+                } else if (msg.body.nrml().match(/biere/g)){
                   api.sendMessage('C\'est mort aujourd\'hui c\'est beaujolais!', msg.threadID);
-                }else if (msg.body.toLowerCase().match(/bobi/g)){
+                }else if (msg.body.nrml().match(/bobi/g)){
                   api.sendMessage(Math.floor((Math.random() * 10)) % 2 ? 'oui' : 'non', msg.threadID);
                 }
               }
