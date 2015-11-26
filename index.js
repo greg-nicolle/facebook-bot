@@ -25,16 +25,13 @@ login(login_conf, function callback (err, api) {
         console.log(message);
         if(message.body) {
          // db.newMessage(message);
-          //insult
-          //other
           if (message.body == 'Bobi?') api.sendMessage(message.senderName + '?', message.threadID);
-         // if (message.body.match(/pute/g)) api.sendMessage('C\'est ' + message.senderName + ' la pute', message.threadID);
           if (message.body == 'Biere?') api.sendMessage('C\'est mort aujourd\'hui c\'est beaujolais!', message.threadID);//TODO ?
 
           new Promise(function(resolve,reject){
-            insults.filter(ins => message.body.match(new RegExp(ins,'g'))).length > 0 ? reject() : resolve()
+            insults.some(ins => message.body.toLowerCase().match(new RegExp(ins,'g')))? reject(message) : resolve(message)
           })
-              .catch(api.sendMessage((message.senderName + 'c\'est pas bien d\insulter les gens', message.threadID)))
+              .catch(msg => api.sendMessage(msg.senderName + ' c\'est pas bien d\'insulter les gens', msg.threadID))
               .then(function(){
                 if (message.body.match(/[?]/g)) {
                   if(message.body.match(/heure/g)) {
