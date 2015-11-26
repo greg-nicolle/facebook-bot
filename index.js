@@ -9,7 +9,7 @@ require('./lib.js');
 var db = require('./db.js');
 
 var login_conf = require('./login_conf.json'),
-    insults = require('./insults.json'),
+    insults = require('./dico/insults.json'),
     insult_response = require('./dico/insult_response.json');
 
 program
