@@ -31,8 +31,11 @@ login(login_conf, function callback (err, api) {
           new Promise(function(resolve,reject){
             insults.some(ins => message.body.toLowerCase().match(new RegExp(ins,'g')))? reject(message) : resolve(message)
           })
-              .catch(msg => api.sendMessage(msg.senderName + ' c\'est pas bien d\'insulter les gens', msg.threadID))
-              .then(function(){
+              .catch(function(msg) {
+api.sendMessage(msg.senderName + ' c\'est pas bien d\'insulter les gens', msg.threadID); 
+return Promise.reject();
+})
+              .then(function() {
                 if (message.body.match(/[?]/g)) {
                   if(message.body.match(/heure/g)) {
                     api.sendMessage('vers '+Math.floor((Math.random() * 100))%24+' heure', message.threadID);
