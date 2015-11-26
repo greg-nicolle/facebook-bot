@@ -34,13 +34,13 @@ login(login_conf, function callback(err, api) {
             })
             .then(function (msg) {
               if (msg.body.match(/[?]/g)) {
-                if (msg.body.toLowerCase().match(/heure/g)) {
+                if (msg.body.toLowerCase().match(/heure/g) && msg.body.length > 10) {
                   api.sendMessage('vers ' + Math.floor((Math.random() * 100)) % 24 + ' heure', msg.threadID);
-                } else if (msg.body.toLowerCase().match(/quand/g)) {
+                } else if (msg.body.toLowerCase().match(/quand/g) && msg.body.length > 10) {
                   api.sendMessage('Dans ' + Math.floor((Math.random() * 100)) % 59 + ' minutes', msg.threadID);
-                } else if (msg.body.toLowerCase().match(/qui/g)) {
+                } else if (msg.body.toLowerCase().match(/qui/g) && msg.body.length > 10) {
                   api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length - 1] + '', msg.threadID);
-                } else if (msg.body.toLowerCase().match(/biere/g)){
+                } else if (msg.body.toLowerCase().match(/biere/g) && msg.body.length > 10){
                   api.sendMessage('C\'est mort aujourd\'hui c\'est beaujolais!', msg.threadID);
                 }else if (msg.body.toLowerCase().match(/bobi/g)){
                   api.sendMessage(Math.floor((Math.random() * 10)) % 2 ? 'oui' : 'non', msg.threadID);
