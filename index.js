@@ -38,11 +38,11 @@ login(login_conf, function callback(err, api) {
                 if (msg.body.nrml().match(/heure/g) && msg.body.length > 10) {
                   api.sendMessage('vers ' + Math.floor((Math.random() * 100)) % 24 + ' heure', msg.threadID);
                 } else if (msg.body.nrml().match(/soir/g) && msg.body.nrml().match(/chaud/g)) {
-                  api.sendMessage('Dans ' + Math.floor((Math.random() * 100)) % 59 + ' minutes', msg.threadID);
+                  api.sendMessage('Ouais chaud !', msg.threadID);
                 } else if (msg.body.nrml().match(/quand/g) && msg.body.length > 10) {
                   api.sendMessage('Dans ' + Math.floor((Math.random() * 100)) % 59 + ' minutes', msg.threadID);
                 } else if (msg.body.nrml().match(/qui/g) && msg.body.length > 10) {
-                  api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length - 1] + '', msg.threadID);
+                  api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length] + '', msg.threadID);
                 } else if (msg.body.nrml().match(/biere/g)) {
                   api.sendMessage('C\'est mort aujourd\'hui c\'est beaujolais!', msg.threadID);
                 } else if (msg.body.nrml().match(/bobi/g)) {
