@@ -8,16 +8,21 @@ require('./lib.js');
 
 var db = require('./db.js');
 
+var weather = require('weather-js');
+
 var login_conf = require('./login_conf.json'),
     insults = require('./dico/insults.json'),
     insult_response = require('./dico/insult_response.json');
 
 program
     .version(require('./package.json').version)
+    .option('-l, --log [log]', 'Npm log level default silent','silent')
     .parse(process.argv);
 
+var facebook_option = {logLevel:program.log};
+
 // Create simple echo bot
-login(login_conf, function callback(err, api) {
+login(login_conf, facebook_option, function callback(err, api) {
   if (err) return console.error(err);
 
   api.listen(function callback(err, message) {
@@ -26,7 +31,7 @@ login(login_conf, function callback(err, api) {
       if (message.body) {
 
         new Promise(function (resolve, reject) {
-          insults.some(ins => message.body.nrml().match(new RegExp(ins, 'g')))? reject(message) : resolve(message)
+          insults.some(ins => message.body.nrml().match(new RegExp(ins, 'g'))) ? reject(message) : resolve(message)
         })
             .catch(function (msg) {
               var nb = Math.floor((Math.random() * 100)) % insult_response.length;
@@ -45,6 +50,15 @@ login(login_conf, function callback(err, api) {
                   api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length] + '', msg.threadID);
                 } else if (msg.body.nrml().match(/biere/g)) {
                   api.sendMessage('C\'est mort aujourd\'hui c\'est beaujolais!', msg.threadID);
+                } else if (msg.body.nrml().match(/temps/g) && !msg.body.nrml().match(/combien/g) && msg.body.length > 10) {
+                  weather.find({search: 'Paris France', degreeType: 'C' , lang:'fr'}, function(err, result) {
+                    if(err) {
+                      console.log(err);
+                    } else {
+                      var temps = result[0].current;
+                      api.sendMessage('C\'est '+temps.skytext+' et il fait '+temps.temperature, msg.threadID);
+                    }
+                  });
                 } else if (msg.body.nrml().match(/bobi/g)) {
                   api.sendMessage(Math.floor((Math.random() * 10)) % 2 ? 'oui' : 'non', msg.threadID);
                 }
@@ -54,3 +68,9 @@ login(login_conf, function callback(err, api) {
     }
   });
 });
+
+//weather.find({search: 'Paris France', degreeType: 'C' , lang:'fr'}, function(err, result) {
+//  if(err) console.log(err);
+//
+//  console.log(JSON.stringify(result, null, 2));
+//});
