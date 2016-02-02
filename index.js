@@ -10,6 +10,8 @@ var db = require('./db.js');
 
 var weather = require('weather-js');
 
+var request = require('request');
+
 var login_conf = require('./login_conf.json'),
     insults = require('./dico/insults.json'),
     insult_response = require('./dico/insult_response.json');
@@ -30,6 +32,17 @@ login(login_conf, facebook_option, function callback(err, api) {
       console.log(message);
       if (message.body) {
 
+        console.log(message);
+
+        request.post({url:'http://localhost:8000/NewFacebookMessage/', form: {message:{
+          threadID: message.threadID,
+          senderID: message.senderID,
+          body: message.body,
+          threadName: message.threadID,
+          messageID: message.messageID,
+          timestamp: message.timestamp
+        }}}, function(err,httpResponse,body){ console.log(err);console.log(httpResponse);console.log(body); });
+
         new Promise(function (resolve, reject) {
           insults.some(ins => message.body.nrml().match(new RegExp(ins, 'g'))) ? reject(message) : resolve(message)
         })
@@ -49,7 +62,7 @@ login(login_conf, facebook_option, function callback(err, api) {
                 } else if (msg.body.nrml().match(/qui/g) && msg.body.length > 10) {
                   api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length] + '', msg.threadID);
                 } else if (msg.body.nrml().match(/biere/g)) {
-                  api.sendMessage('C\'est mort aujourd\'hui c\'est beaujolais!', msg.threadID);
+                  api.sendMessage('Chaud!', msg.threadID);
                 } else if (msg.body.nrml().match(/temps/g) && !msg.body.nrml().match(/combien/g) && msg.body.length > 10) {
                   weather.find({search: 'Paris France', degreeType: 'C' , lang:'fr'}, function(err, result) {
                     if(err) {
