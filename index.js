@@ -34,7 +34,7 @@ login(login_conf, facebook_option, function callback(err, api) {
 
         console.log(message);
 
-        request.post({url:'http://localhost:8080/NewFacebookMessage/', form: {message:{
+        request.post({url:'http://localhost:8000/NewFacebookMessage/', form: {message:{
           threadID: message.threadID,
           senderID: message.senderID,
           body: message.body,
