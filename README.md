@@ -12,6 +12,13 @@ $ npm install
 
 Add facebook email and password in login_conf.json
 
+```javascript
+{
+  "email": "EMAIL",
+  "password": "PASSWORD"
+}
+```
+
 ### Start
 
 Just do

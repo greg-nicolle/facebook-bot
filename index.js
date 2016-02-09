@@ -6,8 +6,6 @@ var program = require('commander'),
 
 require('./lib.js');
 
-var db = require('./db.js');
-
 var weather = require('weather-js');
 
 var request = require('request');
@@ -81,9 +79,3 @@ login(login_conf, facebook_option, function callback(err, api) {
     }
   });
 });
-
-//weather.find({search: 'Paris France', degreeType: 'C' , lang:'fr'}, function(err, result) {
-//  if(err) console.log(err);
-//
-//  console.log(JSON.stringify(result, null, 2));
-//});
