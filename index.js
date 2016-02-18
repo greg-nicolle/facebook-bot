@@ -42,7 +42,7 @@ login(login_conf, facebook_option, function callback(err, api) {
         }}}, function(err,httpResponse,body){ console.log(err);console.log(httpResponse);console.log(body); });
 
         new Promise(function (resolve, reject) {
-          insults.some(ins => message.body.nrml().match(new RegExp(ins, 'g'))) ? reject(message) : resolve(message)
+          insults.some(ins => " "+message.body+" ".nrml().match(new RegExp("[^\w]"+ins+"[^\w]", 'g'))) ? reject(message) : resolve(message)
         })
             .catch(function (msg) {
               var nb = Math.floor((Math.random() * 100)) % insult_response.length;
