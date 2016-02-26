@@ -46,7 +46,7 @@ login(login_conf, facebook_option, function callback(err, api) {
         })
             .catch(function (msg) {
               var nb = Math.floor((Math.random() * 100)) % insult_response.length;
-              api.sendMessage(insult_response[nb][0] + msg.senderName + insult_response[nb][1], msg.threadID);
+              api.sendMessage(insult_response[nb][0] + msg.senderName.split(' ')[0] + insult_response[nb][1], msg.threadID);
               return Promise.reject();
             })
             .then(function (msg) {
@@ -58,7 +58,7 @@ login(login_conf, facebook_option, function callback(err, api) {
                 } else if (msg.body.nrml().match(/quand/g) && msg.body.length > 10) {
                   api.sendMessage('Dans ' + Math.floor((Math.random() * 100)) % 59 + ' minutes', msg.threadID);
                 } else if (msg.body.nrml().match(/qui/g) && msg.body.length > 10) {
-                  api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length] + '', msg.threadID);
+                  api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length].split(' ')[0] + '', msg.threadID);
                 } else if (msg.body.nrml().match(/biere/g)) {
                   api.sendMessage('Chaud!', msg.threadID);
                 } else if (msg.body.nrml().match(/temps/g) && !msg.body.nrml().match(/combien/g) && msg.body.length > 10) {
