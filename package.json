@@ -1,16 +1,18 @@
 {
   "name": "facebook-bot",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "test": "jshint *.js",
+    "start": "node index.js",
+    "deploy": "ansible-playbook ./ansible/playbooks/deploy.yml"
   },
   "author": "greg-nicolle",
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.0.3",
+    "bunyan": "^1.7.1",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "facebook-chat-api": "^1.0.2",
@@ -22,6 +24,9 @@
     "url": "git://github.com/greg-nicolle/facebook-bot"
   },
   "engines": {
-    "node": "~4.2.2"
+    "node": "~4.3.1"
+  },
+  "devDependencies": {
+    "jshint": "^2.9.1"
   }
 }

@@ -1,5 +1,5 @@
 # facebook-bot
-
+[![Build Status](https://travis-ci.org/greg-nicolle/facebook-bot.svg?branch=master)](https://travis-ci.org/greg-nicolle/facebook-bot)
 ## Usage
 
 ### Install
@@ -25,4 +25,12 @@ Just do
 
 ```shell
 $ npm start
+```
+
+### To deploy bobi on prod
+
+install ansible and do:
+
+```shell
+$ npm run deploy
 ```
