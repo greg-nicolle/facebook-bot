@@ -1,0 +1,21 @@
+---
+- name: Run Spark Job
+  hosts: fb
+
+  tasks:
+    - name: Clone repo
+      git: repo=https://github.com/greg-nicolle/facebook-bot.git
+            dest=/home/{{ user }}/project/facebook-bot
+      become: yes
+      become_method: sudo
+
+    - name: Install dependencies
+      npm: path=/home/{{ user }}/project/facebook-bot
+      become: yes
+      become_method: sudo
+
+    - name: Stop app
+      shell: pm2 stop -f facebook-bot
+
+    - name: Start app
+      shell: pm2 start --name="facebook-bot" -f /home/{{ user }}/project/facebook-bot/index.js -- --password {{ password }} --email {{ email }}
