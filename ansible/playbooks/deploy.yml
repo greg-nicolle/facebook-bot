@@ -6,6 +6,7 @@
     - name: Clone repo
       git: repo=https://github.com/greg-nicolle/facebook-bot.git
             dest=/home/{{ user }}/project/facebook-bot
+            version=master
       become: yes
       become_method: sudo
 
