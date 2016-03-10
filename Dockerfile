@@ -10,4 +10,4 @@ COPY . /src
 # Install app dependencies
 RUN cd /src; npm install
 
-CMD ["npm", "start"]
+CMD npm start -- --password $PASSWORD --email $EMAIL
