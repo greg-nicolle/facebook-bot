@@ -1,5 +1,6 @@
 # facebook-bot
 [![Build Status](https://travis-ci.org/greg-nicolle/facebook-bot.svg?branch=master)](https://travis-ci.org/greg-nicolle/facebook-bot)
+[Codacy](https://www.codacy.com/app/gnicolle/facebook-bot/dashboard)
 ## Usage
 
 ### Install

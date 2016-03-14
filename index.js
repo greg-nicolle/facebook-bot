@@ -11,7 +11,7 @@ var weather = require('weather-js');
 var request = require('request');
 
 var insults = require('./dico/insults.json'),
-    insult_response = require('./dico/insult_response.json');
+    insultResponse = require('./dico/insult_response.json');
 
 var bunyan = require('bunyan');
 var log = bunyan.createLogger({
@@ -40,14 +40,14 @@ program
     .option('-q, --quiet', 'Don\'t notify when new message')
     .parse(process.argv);
 
-var facebook_option = {logLevel: 'silent'};
+var facebookOption = {logLevel: 'silent'};
 
-var login_conf = {
+var loginConf = {
   email: program.email,
   password: program.password
 };
 
-login(login_conf, facebook_option, function callback(err, api) {
+login(loginConf, facebookOption, function callback(err, api) {
   if (err) {
     return log.error(err);
   }
@@ -78,8 +78,8 @@ login(login_conf, facebook_option, function callback(err, api) {
           insults.some(ins => (' ' + message.body + ' ').nrml().match(new RegExp('[^\w]' + ins + '[^\w]', 'g'))) ? reject(message) : resolve(message);
         })
             .catch(function (msg) {
-              var nb = Math.floor((Math.random() * 100)) % insult_response.length;
-              api.sendMessage(insult_response[nb][0] + msg.senderName.split(' ')[0] + insult_response[nb][1], msg.threadID);
+              var nb = Math.floor((Math.random() * 100)) % insultResponse.length;
+              api.sendMessage(insultResponse[nb][0] + msg.senderName.split(' ')[0] + insultResponse[nb][1], msg.threadID);
               return Promise.reject();
             })
             .then(function (msg) {

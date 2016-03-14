@@ -1,5 +1,5 @@
 ---
-- name: Run Spark Job
+- name: Deploy facebook-bot
   hosts: fb
 
   tasks:
