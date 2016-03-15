@@ -107,6 +107,10 @@ login(loginConf, facebookOption, function callback(err, api) {
                   api.sendMessage(Math.floor((Math.random() * 10)) % 2 ? 'oui' : 'non', msg.threadID);
                 }
               }
+
+              if(msg.body.nrml() === 'ping') {
+                api.sendMessage('pong', msg.threadID);
+              }
             });
       }
     } else {
