@@ -75,9 +75,7 @@ login(loginConf, facebookOption, function callback(err, api) {
         }
 
         new Promise(function (resolve, reject) {
-          insults.some(ins = > (` ${message.body} `).nrml().match(new RegExp(`[^\w]${ins}[^\w]`, 'g'))
-          )
-          ? reject(message) : resolve(message);
+          insults.some(ins => (` ${message.body} `).nrml().match(new RegExp(`[^\w]${ins}[^\w]`, 'g'))) ? reject(message) : resolve(message);
         })
             .catch(function (msg) {
               var nb = Math.floor((Math.random() * 100)) % insultResponse.length;
