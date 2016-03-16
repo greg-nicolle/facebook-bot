@@ -1,13 +1,14 @@
-FROM    centos:centos6
+FROM node:argon
 
-# Enable EPEL for Node.js
-RUN     rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-# Install Node.js and npm
-RUN     yum install -y npm
+# Create app directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+# Install app dependencies
+COPY package.json /usr/src/app/
+RUN npm install
 
 # Bundle app source
-COPY . /src
-# Install app dependencies
-RUN cd /src; npm install
+COPY . /usr/src/app
 
 CMD npm start -- --password $PASSWORD --email $EMAIL

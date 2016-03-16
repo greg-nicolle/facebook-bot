@@ -32,7 +32,7 @@ $ npm start -- --password your_password --email your_email
 
 #### Using Docker
 ```shell
-docker run gregncll/faceboot-bot -e PASSWORD=your_password -e EMAIL=your_email
+docker run -e PASSWORD="your_password" -e EMAIL="your_email" gregncll/faceboot-bot
 ```
 
 ### To deploy bobi on prod
