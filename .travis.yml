@@ -1,3 +1,25 @@
+sudo: required
+
+services:
+  - docker
+
 language: node_js
+
 node_js:
   - 4.1.0
+
+env:
+  global:
+    - secure: "mCQ3zdgWExwlw0LQdbJhLlAY/ntfLLUFGzbJvjOizOFlTN3+K6lu110GJmdhn3HJi5abtakA9hd7Ydppq9LqYXTMLYsYP1sJD3qyC8uQ++0BPJqGRriO+NRqxjTaW5ccDVQfC5J2/mWdpxjQQdIHtR8wEIfac41wLMVtMb9tpo4FRYjFH/SEGAGXM2ReXJYlGATl0KeXz0Ed8rQ2mI6kvQmYRkuyV9Z066bDBttsKO6o7v/t3YouPKCf6Dwyf2fOj4BrQYbkGacZcPiHoLIA6AprGLRzJEegqQiZ+8rs4jXUKNz+PRm6UKMSCpP0KF00SyM8a5zMnpTM1YqjnAA/Wj9wcq/3+I/d/nRQU/lJCjVvwFrI0UF+UBjltEOgOBc8/DJECkjwAaxGtesAq/VkekBTMrRqixiOR1EAxH16jgpopv9mxLd4vrpoY+rVcvvQFtugVno8D6swKv8NQQhvGM4ucAnPDIwGAyPnRbA91iEIVOLLYw0jVpWA+QwnQ19xlI1ZXymHjcdB6Cm+t8Sc3xHmVbw9otmd6zDYsoSWj4eCXopYFTeWFVWddGtYyyBvTEdMyhBrZdbYqbarg8YqxNswv5/lH0wvx81tCta+cNohzxRT8Zcyv0nJuvqb557sAUtSIX8QkS47Z0DLkMZ6aw/sObmwSiJmPphHH54+UOY=" # DOCKER_EMAIL
+    - secure: "UsMFaBAmkpHH28xzjokBVyVtgjhpS12kMMaE/T35m322XiBf7zavzXMw2jirPQxZKgYxn0tnchVYo0JBSxHMzaqMZBtYXwgNixaJ9QparoJXTjKQRUpsy1SsiNIf2YnOBraGs9bWP6yyn69wFjOA0tYRqYEiQ4w3JkGdI2YOILI8ve14fQ+H8VJutioAm45gVHvhdZDvO1VpnctvK9FG5XfMNmetLVWzlxU2ki/h4AwFzNFvASqhS+92sgVPWAvj08en53j3q05cBpZUWEr+1HjAJEBBMUl2RqdkZkFFiz9H+cP+ywi5+BzmAl1dZ9wExvqWXf9EqlN67awXWaR1FEA6HqRlWr2DMPpUtsyKeol3i+PQ4u0r2RnrCb6/i/7isVMoA4WFnHvjRy5RvyfViWmeO1df2/xtoajY7zYHdO6kDdBm03pTvIjCw+ksIvglMeVhXY6PR/z5qGReyFNx/ZUQRdQslcg8vbcEo5wmJ7kn0A0IpYmRSoQgYDFWDFNtrx5N6sx2q8p28EsZq0TsblAYlNU0VF8WPX2eep8LqFJH2P31PtZFGNauVqnHVhbzZdmeW+HF+52nhqSuO186+W0jmmzECiPKmaiCRkcnByNdcJ0j1ydYOHlr+bcNXRZ17TKvI3+ALZO/8o7bMrBVxWpRjo33sGRWvs5NymLULNc=" # DOCKER_USER
+    - secure: "N4+yzfjx3XIV+m6apkn10K4OkKG/Ti8dGYf+xKzC1yJKUjm/iKeBajyKx6BFdRKH108/fhwDgUvLDhoASa5u7cm4X8IVI2k5Ql3kLSQa3ZL/BWaZN8Q3MCwgjNFu4kvRb2VQb+8IwalX9xJ42VhzED8IUClRlxsxe1ftr2obmg0lwNsxEvZyXvGARiuBNWAefR8LoVywkx6z+HT6qy+vOVEZPpkCkwSRu+4JXmqapc/anQqnrEv1u+Btrkqef34mUWN0V+WZLeM7CAp6bgCjKlLkpWVd7ZUzglKWdHM5Ht+wxSkZVXK+MP9Dqr6ulXmq8FFDjOUT5U46Z8oUfA7zPwn6eAwLE4D+InqZYVjnKYmn1IjIXh8jI2fl64IOa/DL4NXEg+hPBPnzmsVHPO60a3xjNrOpMwvxO6h0YXoTgd3JucpYaP7xZlS75zV+udA3mjEjqhjQWH3AJzELaFUNGxi7pq10s/plKJV1k+STgsuh8JLAk+PBGDeLFuCe0HDlnbldXCwLxDswd/hUOw4Qo77OiNRYYAD57fEpaz1mXy2RiwflOpaqyHf5ROxd9iVHA5OcSUG1sQIXXjhVWlf6cp1Dz5Ph5fxhh2XD63OOjGVVQ0ze1FO+e4wBDyHJTjm5hA5tN+4nEFKc7P7Sl2GPUWepuNTPtmGgIVPB7YN1UWM=" # DOCKER_PASS
+    - COMMIT=${TRAVIS_COMMIT::8}
+
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=gregncll/faceboot-bot
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
