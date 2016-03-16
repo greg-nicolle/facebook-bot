@@ -75,7 +75,9 @@ login(loginConf, facebookOption, function callback(err, api) {
         }
 
         new Promise(function (resolve, reject) {
-          insults.some(ins => (' ' + message.body + ' ').nrml().match(new RegExp('[^\w]' + ins + '[^\w]', 'g'))) ? reject(message) : resolve(message);
+          insults.some(ins = > (` ${message.body} `).nrml().match(new RegExp(`[^\w]${ins}[^\w]`, 'g'))
+          )
+          ? reject(message) : resolve(message);
         })
             .catch(function (msg) {
               var nb = Math.floor((Math.random() * 100)) % insultResponse.length;
@@ -83,33 +85,29 @@ login(loginConf, facebookOption, function callback(err, api) {
               return Promise.reject();
             })
             .then(function (msg) {
-              if (msg.body.match(/[?]/g)) {
-                if (msg.body.nrml().match(/heure/g) && msg.body.length > 10) {
-                  api.sendMessage('vers ' + Math.floor((Math.random() * 100)) % 24 + ' heure', msg.threadID);
-                } else if (msg.body.nrml().match(/soir/g) && msg.body.nrml().match(/chaud/g)) {
-                  api.sendMessage('Ouais chaud !', msg.threadID);
-                } else if (msg.body.nrml().match(/quand/g) && msg.body.length > 10) {
-                  api.sendMessage('Dans ' + Math.floor((Math.random() * 100)) % 59 + ' minutes', msg.threadID);
-                } else if (msg.body.nrml().match(/qui/g) && msg.body.length > 10) {
-                  api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length].split(' ')[0] + '', msg.threadID);
-                } else if (msg.body.nrml().match(/biere/g)) {
-                  api.sendMessage('Chaud!', msg.threadID);
-                } else if (msg.body.nrml().match(/temps/g) && !msg.body.nrml().match(/combien/g) && msg.body.length > 10) {
-                  weather.find({search: 'Paris France', degreeType: 'C', lang: 'fr'}, function (err, result) {
-                    if (err) {
-                      log.error(err);
-                    } else {
-                      var temps = result[0].current;
-                      api.sendMessage('C\'est ' + temps.skytext + ' et il fait ' + temps.temperature, msg.threadID);
-                    }
-                  });
-                } else if (msg.body.nrml().match(/bobi/g)) {
-                  api.sendMessage(Math.floor((Math.random() * 10)) % 2 ? 'oui' : 'non', msg.threadID);
-                }
-              }
-
-              if(msg.body.nrml() === 'ping') {
+              if (msg.body.nrml() === 'ping') {
                 api.sendMessage('pong', msg.threadID);
+              } else if (msg.body.nrml().match(/(.*)heure(.*)\?$/) && msg.body.length > 10) {
+                api.sendMessage('vers ' + Math.floor((Math.random() * 100)) % 24 + ' heure', msg.threadID);
+              } else if (msg.body.nrml().match(/(.*)soir(.*)\?$/) && msg.body.nrml().match(/(.*)chaud(.*)\?$/)) {
+                api.sendMessage('Ouais chaud !', msg.threadID);
+              } else if (msg.body.nrml().match(/(.*)quand(.*)\?$/) && msg.body.length > 10) {
+                api.sendMessage('Dans ' + Math.floor((Math.random() * 100)) % 59 + ' minutes', msg.threadID);
+              } else if (msg.body.nrml().match(/(.*)qui(.*)\?/) && msg.body.length > 10) {
+                api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length].split(' ')[0] + '', msg.threadID);
+              } else if (msg.body.nrml().match(/(.*)biere(.*)\?/)) {
+                api.sendMessage('Chaud!', msg.threadID);
+              } else if (msg.body.nrml().match(/(.*)temps(.*)\?/) && !msg.body.nrml().match(/combien/g) && msg.body.length > 10) {
+                weather.find({search: 'Paris France', degreeType: 'C', lang: 'fr'}, function (err, result) {
+                  if (err) {
+                    log.error(err);
+                  } else {
+                    var temps = result[0].current;
+                    api.sendMessage('C\'est ' + temps.skytext.toLowerCase() + ' et il fait ' + temps.temperature, msg.threadID);
+                  }
+                });
+              } else if (msg.body.nrml().match(/(.*)bobi(.*)\?/)) {
+                api.sendMessage(Math.floor((Math.random() * 10)) % 2 ? 'oui' : 'non', msg.threadID);
               }
             });
       }
