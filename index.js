@@ -83,6 +83,9 @@ login(loginConf, facebookOption, function callback(err, api) {
               return Promise.reject();
             })
             .then(function (msg) {
+              if (!!msg.body.nrml().match(/(.*)anniversaire(.*)$/) || !!msg.body.nrml().match(/(.*)birthday(.*)$/) || !!msg.body.nrml().match(/(.*)anniv(.*)$/)) {
+                api.sendMessage('Merci !', msg.threadID);
+              }
               if (msg.body.nrml() === 'ping') {
                 api.sendMessage('pong', msg.threadID);
               } else if (msg.body.nrml().match(/(.*)heure(.*)\?$/) && msg.body.length > 10) {

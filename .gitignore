@@ -8,3 +8,6 @@ login_conf.json
 
 *.log
 *.retry
+
+#deploy
+ansible/inventory
