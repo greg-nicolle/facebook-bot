@@ -78,14 +78,26 @@ login(loginConf, facebookOption, function callback(err, api) {
           insults.some(ins => (` ${message.body} `).nrml().match(new RegExp(`[^\w]${ins}[^\w]`, 'g'))) ? reject(message) : resolve(message);
         })
             .catch(function (msg) {
-              var nb = Math.floor((Math.random() * 100)) % insultResponse.length;
-              api.sendMessage(insultResponse[nb][0] + msg.senderName.split(' ')[0] + insultResponse[nb][1], msg.threadID);
+
+              // TODO Clean!
+
+              api.getUserInfo(msg.senderID, function (err, resp) {
+                api.getThreadInfo(msg.threadID, function (err2, resp2) {
+                  var nb = Math.floor((Math.random() * 100)) % insultResponse.length;
+                  var name = (resp2.nicknames[msg.senderID] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[msg.senderID] : resp[msg.senderID].firstName;
+                  api.sendMessage(insultResponse[nb][0] + name + insultResponse[nb][1], msg.threadID);
+                });
+              });
               return Promise.reject();
             })
             .then(function (msg) {
-              if (!!msg.body.nrml().match(/(.*)anniversaire(.*)$/) || !!msg.body.nrml().match(/(.*)birthday(.*)$/) || !!msg.body.nrml().match(/(.*)anniv(.*)$/)) {
-                api.sendMessage('Merci !', msg.threadID);
-              }
+
+              api.getUserInfo(msg.senderID, function (err, resp) {
+                if (resp[msg.senderID].isBirthday) {
+                  api.sendMessage('Joyeux anniversaire ' + resp[msg.senderID].firstName, msg.threadID);
+                }
+              });
+
               if (msg.body.nrml() === 'ping') {
                 api.sendMessage('pong', msg.threadID);
               } else if (msg.body.nrml().match(/(.*)heure(.*)\?$/) && msg.body.length > 10) {
@@ -94,8 +106,18 @@ login(loginConf, facebookOption, function callback(err, api) {
                 api.sendMessage('Ouais chaud !', msg.threadID);
               } else if (msg.body.nrml().match(/(.*)quand(.*)\?$/) && msg.body.length > 10) {
                 api.sendMessage('Dans ' + Math.floor((Math.random() * 100)) % 59 + ' minutes', msg.threadID);
-              } else if (msg.body.nrml().match(/(.*)qui(.*)\?/) && msg.body.length > 10) {
-                api.sendMessage('' + msg.participantNames[Math.floor((Math.random() * 100)) % msg.participantNames.length].split(' ')[0] + '', msg.threadID);
+              } else if (msg.body.nrml().match(/(.*)qui(.*)\?/) /*&& msg.body.length > 10*/) {
+
+                // TODO Clean!
+
+                api.getThreadInfo(msg.threadID, function (err2, resp2) {
+                  var id = resp2.participantIDs[Math.floor((Math.random() * 100)) % resp2.participantIDs.length];
+
+                  api.getUserInfo(id, function (err, resp) {
+                    var name = (resp2.nicknames[id] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[id] : resp[id].firstName;
+                    api.sendMessage(name, msg.threadID);
+                  });
+                });
               } else if (msg.body.nrml().match(/(.*)biere(.*)\?/)) {
                 api.sendMessage('Chaud!', msg.threadID);
               } else if (msg.body.nrml().match(/(.*)temps(.*)\?/) && !msg.body.nrml().match(/combien/g) && msg.body.length > 10) {
