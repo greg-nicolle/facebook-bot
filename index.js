@@ -4,7 +4,8 @@ var program = require('commander'),
     P = require('bluebird'),
     login = P.promisifyAll(require('facebook-chat-api'));
 
-require('./lib.js');
+require('./src/utils.js');
+var contains = require('./src/SmartContains').contains;
 
 var weather = require('weather-js');
 
@@ -75,7 +76,7 @@ login(loginConf, facebookOption, function callback(err, api) {
         }
 
         new Promise(function (resolve, reject) {
-          insults.some(ins => (` ${message.body} `).nrml().match(new RegExp(`[^\w]${ins}[^\w]`, 'g'))) ? reject(message) : resolve(message);
+          insults.some(ins => contains(message.body, ins)) ? reject(message) : resolve(message);
         })
             .catch(function (msg) {
 
@@ -84,6 +85,7 @@ login(loginConf, facebookOption, function callback(err, api) {
               api.getUserInfo(msg.senderID, function (err, resp) {
                 api.getThreadInfo(msg.threadID, function (err2, resp2) {
                   var nb = Math.floor((Math.random() * 100)) % insultResponse.length;
+                  // TODO fix "Unhandled rejection TypeError: Cannot read property 'nicknames' of undefined"
                   var name = (resp2.nicknames[msg.senderID] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[msg.senderID] : resp[msg.senderID].firstName;
                   api.sendMessage(insultResponse[nb][0] + name + insultResponse[nb][1], msg.threadID);
                 });
@@ -91,6 +93,8 @@ login(loginConf, facebookOption, function callback(err, api) {
               return Promise.reject();
             })
             .then(function (msg) {
+
+              api.getUserInfo(msg.senderID, function (err, resp) {console.log(resp)});
 
               api.getUserInfo(msg.senderID, function (err, resp) {
                 if (resp[msg.senderID].isBirthday) {
