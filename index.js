@@ -50,6 +50,7 @@ var loginConf = {
 };
 
 login(loginConf, facebookOption, function callback(err, api) {
+  var myVar = setInterval(gregPute, 1000);
   if (err) {
     return log.error(err);
   }
@@ -126,6 +127,12 @@ login(loginConf, facebookOption, function callback(err, api) {
       });
     });
   };
+	
+  var gregPute = function () {
+     api.sendMessage('Ta gueule Greg');
+  }; 
+
+
 
   api.listen(function callback(err, message) {
     if (!err) {
