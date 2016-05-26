@@ -1,20 +1,20 @@
 require('colors');
+require('./src/utils.js');
 
 var program = require('commander'),
     P = require('bluebird'),
-    login = P.promisifyAll(require('facebook-chat-api'));
+    login = P.promisifyAll(require('facebook-chat-api')),
+    bunyan = require('bunyan'),
+    weather = require('weather-js');
 
-require('./src/utils.js');
-var contains = require('./src/SmartContains').contains;
-
-var weather = require('weather-js');
-
-var request = require('request');
-
+var contains = require('./src/SmartContains').contains,
+    sendMessage = require('./src/serverClient').sendNewMessage;
+/**
+ * Import dico
+ **/
 var insults = require('./dico/insults.json'),
     insultResponse = require('./dico/insult_response.json');
 
-var bunyan = require('bunyan');
 var log = bunyan.createLogger({
   name: 'facebook-bot',
   streams: [{
@@ -53,88 +53,103 @@ login(loginConf, facebookOption, function callback(err, api) {
     return log.error(err);
   }
 
+  var pong = function (msg) {
+    api.sendMessage('pong', msg.threadID);
+  };
+
+  var randomHours = function (msg) {
+    api.sendMessage('vers ' + Math.floor((Math.random() * 100)) % 24 + ' heure', msg.threadID);
+  };
+
+  var happyBirsday = function (msg) {
+    api.getUserInfo(msg.senderID, function (err, resp) {
+      if (resp[msg.senderID].isBirthday) {
+        api.sendMessage('Joyeux anniversaire ' + resp[msg.senderID].firstName, msg.threadID);
+      }
+    });
+  };
+
+  var horny = function (msg) {
+    api.sendMessage('Ouais chaud !', msg.threadID);
+  };
+
+  var randomTime = function (msg) {
+    api.sendMessage('Dans ' + Math.floor((Math.random() * 100)) % 59 + ' minutes', msg.threadID);
+  };
+
+  var getWeather = function (msg) {
+    weather.find({search: 'Paris France', degreeType: 'C', lang: 'fr'}, function (err, result) {
+      if (err) {
+        log.error(err);
+      } else {
+        var temps = result[0].current;
+        api.sendMessage('C\'est ' + temps.skytext.toLowerCase() + ' et il fait ' + temps.temperature, msg.threadID);
+      }
+    });
+  };
+
+  var randomYesNo = function (msg) {
+    api.sendMessage(Math.floor((Math.random() * 10)) % 2 ? 'oui' : 'non', msg.threadID);
+  };
+
+  var who = function (msg) {
+    api.getThreadInfo(msg.threadID, function (err2, resp2) {
+      var id = resp2.participantIDs[Math.floor((Math.random() * 100)) % resp2.participantIDs.length];
+
+      api.getUserInfo(id, function (err, resp) {
+        var name = (resp2.nicknames[id] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[id] : resp[id].firstName;
+        api.sendMessage(name, msg.threadID);
+      });
+    });
+  };
+
+  var calmDown = function (msg) {
+    api.getUserInfo(msg.senderID, function (err, resp) {
+      api.getThreadInfo(msg.threadID, function (err2, resp2) {
+        var nb = Math.floor((Math.random() * 100)) % insultResponse.length;
+        // TODO fix "Unhandled rejection TypeError: Cannot read property 'nicknames' of undefined"
+        var name = (resp2.nicknames[msg.senderID] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[msg.senderID] : resp[msg.senderID].firstName;
+        api.sendMessage(insultResponse[nb][0] + name + insultResponse[nb][1], msg.threadID);
+      });
+    });
+  };
+
   api.listen(function callback(err, message) {
     if (!err) {
       if (message.body) {
         log.info({status: 'started'}, 'new message');
 
         if (!program.q) {
-          request.post({
-            url: program.url, form: {
-              message: {
-                threadID: message.threadID,
-                senderID: message.senderID,
-                body: message.body,
-                threadName: message.threadID,
-                messageID: message.messageID,
-                timestamp: message.timestamp
-              }
-            }
-          }, function (err, httpResponse, body) {
-            log.error(err);
-          });
+          sendMessage(message, program.url);
         }
 
         new Promise(function (resolve, reject) {
           insults.some(ins => contains(message.body, ins)) ? reject(message) : resolve(message);
         })
             .catch(function (msg) {
-
-              // TODO Clean!
-
-              api.getUserInfo(msg.senderID, function (err, resp) {
-                api.getThreadInfo(msg.threadID, function (err2, resp2) {
-                  var nb = Math.floor((Math.random() * 100)) % insultResponse.length;
-                  // TODO fix "Unhandled rejection TypeError: Cannot read property 'nicknames' of undefined"
-                  var name = (resp2.nicknames[msg.senderID] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[msg.senderID] : resp[msg.senderID].firstName;
-                  api.sendMessage(insultResponse[nb][0] + name + insultResponse[nb][1], msg.threadID);
-                });
-              });
+              calmDown(msg);
               return Promise.reject();
             })
             .then(function (msg) {
 
-              api.getUserInfo(msg.senderID, function (err, resp) {console.log(resp)});
-
-              api.getUserInfo(msg.senderID, function (err, resp) {
-                if (resp[msg.senderID].isBirthday) {
-                  api.sendMessage('Joyeux anniversaire ' + resp[msg.senderID].firstName, msg.threadID);
-                }
-              });
+              happyBirsday(msg);
 
               if (msg.body.nrml() === 'ping') {
-                api.sendMessage('pong', msg.threadID);
+                pong(msg);
               } else if (msg.body.nrml().match(/(.*)heure(.*)\?$/) && msg.body.length > 10) {
-                api.sendMessage('vers ' + Math.floor((Math.random() * 100)) % 24 + ' heure', msg.threadID);
+                randomHours(msg);
               } else if (msg.body.nrml().match(/(.*)soir(.*)\?$/) && msg.body.nrml().match(/(.*)chaud(.*)\?$/)) {
-                api.sendMessage('Ouais chaud !', msg.threadID);
+                horny(msg);
               } else if (msg.body.nrml().match(/(.*)quand(.*)\?$/) && msg.body.length > 10) {
-                api.sendMessage('Dans ' + Math.floor((Math.random() * 100)) % 59 + ' minutes', msg.threadID);
+                randomTime(msg);
               } else if (msg.body.nrml().match(/(.*)qui(.*)\?/) /*&& msg.body.length > 10*/) {
-
-                // TODO Clean!
-
-                api.getThreadInfo(msg.threadID, function (err2, resp2) {
-                  var id = resp2.participantIDs[Math.floor((Math.random() * 100)) % resp2.participantIDs.length];
-
-                  api.getUserInfo(id, function (err, resp) {
-                    var name = (resp2.nicknames[id] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[id] : resp[id].firstName;
-                    api.sendMessage(name, msg.threadID);
-                  });
-                });
+                who(msg);
               } else if (msg.body.nrml().match(/(.*)biere(.*)\?/)) {
-                api.sendMessage('Chaud!', msg.threadID);
+                horny(msg);
               } else if (msg.body.nrml().match(/(.*)temps(.*)\?/) && !msg.body.nrml().match(/combien/g) && msg.body.length > 10) {
-                weather.find({search: 'Paris France', degreeType: 'C', lang: 'fr'}, function (err, result) {
-                  if (err) {
-                    log.error(err);
-                  } else {
-                    var temps = result[0].current;
-                    api.sendMessage('C\'est ' + temps.skytext.toLowerCase() + ' et il fait ' + temps.temperature, msg.threadID);
-                  }
-                });
+                getWeather(msg);
               } else if (msg.body.nrml().match(/(.*)bobi(.*)\?/)) {
-                api.sendMessage(Math.floor((Math.random() * 10)) % 2 ? 'oui' : 'non', msg.threadID);
+                randomYesNo(msg);
               }
             });
       }

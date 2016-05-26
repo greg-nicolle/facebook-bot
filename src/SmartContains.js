@@ -1,3 +1,6 @@
-require('./utils')
+require('./utils');
 
-exports.contains = (str, keyWord) => {return (` ${str} `).nrml().match(new RegExp(`[^\w]${keyWord}[^\w]`, 'g'))[0].replace(/ /, '').replace(/ /, '') == keyWord}
+exports.contains = function (str, keyWord) {
+  var result = (` ${str} `).nrml().match(new RegExp(`[^\w]${keyWord}[^\w]`, 'g'));
+  return result !== null? result[0].replace(/ /, '').replace(/ /, '') == keyWord : false;
+};
