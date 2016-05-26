@@ -30,7 +30,7 @@ exports.sendNewMessage = function (msg, url) {
         timestamp: msg.timestamp
       }
     }
-  }, function (err, httpResponse, body) {
+  }, function (err) {
     log.error(err);
   });
 };

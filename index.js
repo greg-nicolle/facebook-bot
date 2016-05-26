@@ -13,7 +13,8 @@ var contains = require('./src/SmartContains').contains,
  * Import dico
  **/
 var insults = require('./dico/insults.json'),
-    insultResponse = require('./dico/insult_response.json');
+    insultResponse = require('./dico/insult_response.json'),
+    birsdayAnswer = require('./dico/birsdayAnswer.json');
 
 var log = bunyan.createLogger({
   name: 'facebook-bot',
@@ -64,7 +65,12 @@ login(loginConf, facebookOption, function callback(err, api) {
   var happyBirsday = function (msg) {
     api.getUserInfo(msg.senderID, function (err, resp) {
       if (resp[msg.senderID].isBirthday) {
-        api.sendMessage('Joyeux anniversaire ' + resp[msg.senderID].firstName, msg.threadID);
+
+        var nb = Math.floor((Math.random() * 100)) % birsdayAnswer.length;
+
+        var name = (resp2.nicknames[id] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[id] : resp[id].firstName;
+        api.sendMessage(birsdayAnswer[nb][0] + name, msg.threadID +birsdayAnswer[nb][1]);
+
       }
     });
   };
@@ -104,12 +110,19 @@ login(loginConf, facebookOption, function callback(err, api) {
   };
 
   var calmDown = function (msg) {
+
+    // TODO Clean that
+
     api.getUserInfo(msg.senderID, function (err, resp) {
       api.getThreadInfo(msg.threadID, function (err2, resp2) {
         var nb = Math.floor((Math.random() * 100)) % insultResponse.length;
-        // TODO fix "Unhandled rejection TypeError: Cannot read property 'nicknames' of undefined"
         var name = (resp2.nicknames[msg.senderID] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[msg.senderID] : resp[msg.senderID].firstName;
-        api.sendMessage(insultResponse[nb][0] + name + insultResponse[nb][1], msg.threadID);
+        if(resp[msg.senderID].isBirthday) {
+          var pronom = resp[msg.senderID].gender === 1? 'le' : 'la';
+          api.sendMessage('C\'est pas parce que c\'est ton anniversaire que t\' le droit de faire ' + pronom + ' ouf ' + name, msg.threadID);
+        } else {
+          api.sendMessage(insultResponse[nb][0] + name + insultResponse[nb][1], msg.threadID);
+        }
       });
     });
   };
@@ -142,7 +155,7 @@ login(loginConf, facebookOption, function callback(err, api) {
                 horny(msg);
               } else if (msg.body.nrml().match(/(.*)quand(.*)\?$/) && msg.body.length > 10) {
                 randomTime(msg);
-              } else if (msg.body.nrml().match(/(.*)qui(.*)\?/) /*&& msg.body.length > 10*/) {
+              } else if (msg.body.nrml().match(/(.*)qui(.*)\?/) && msg.body.length > 10) {
                 who(msg);
               } else if (msg.body.nrml().match(/(.*)biere(.*)\?/)) {
                 horny(msg);
