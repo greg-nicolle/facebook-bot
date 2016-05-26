@@ -50,7 +50,7 @@ var loginConf = {
 };
 
 login(loginConf, facebookOption, function callback(err, api) {
-  var myVar = setInterval(gregPute, 1000);
+  var myVar = setInterval(gregPute, 360000000);
   if (err) {
     return log.error(err);
   }
@@ -120,7 +120,7 @@ login(loginConf, facebookOption, function callback(err, api) {
         var name = (resp2.nicknames[msg.senderID] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[msg.senderID] : resp[msg.senderID].firstName;
         if(resp[msg.senderID].isBirthday) {
           var pronom = resp[msg.senderID].gender === 1? 'le' : 'la';
-          api.sendMessage('C\'est pas parce que c\'est ton anniversaire que t\' le droit de faire ' + pronom + ' ouf ' + name, msg.threadID);
+          api.sendMessage('C\'est pas parce que c\'est ton anniversaire que t\'as le droit de faire ' + pronom + ' ouf ' + name, msg.threadID);
         } else {
           api.sendMessage(insultResponse[nb][0] + name + insultResponse[nb][1], msg.threadID);
         }
@@ -129,7 +129,7 @@ login(loginConf, facebookOption, function callback(err, api) {
   };
 	
   var gregPute = function () {
-     api.sendMessage('Ta gueule Greg');
+     api.sendMessage('Ta gueule Greg', msg.threadID);
   }; 
 
 
