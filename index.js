@@ -50,7 +50,6 @@ var loginConf = {
 };
 
 login(loginConf, facebookOption, function callback(err, api) {
-  var myVar = setInterval(gregPute, 360000000);
   if (err) {
     return log.error(err);
   }
@@ -64,15 +63,16 @@ login(loginConf, facebookOption, function callback(err, api) {
   };
 
   var happyBirsday = function (msg) {
-    api.getUserInfo(msg.senderID, function (err, resp) {
-      if (resp[msg.senderID].isBirthday) {
+    api.getThreadInfo(msg.threadID, function (err2, resp2) {
+      api.getUserInfo(msg.senderID, function (err, resp) {
+        if (resp[msg.senderID].isBirthday) {
+          var nb = Math.floor((Math.random() * 100)) % birsdayAnswer.length;
 
-        var nb = Math.floor((Math.random() * 100)) % birsdayAnswer.length;
+          var name = (resp2.nicknames[msg.senderID] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[msg.senderID] : resp[msg.senderID].firstName;
+          api.sendMessage(birsdayAnswer[nb][0] + name, msg.threadID + birsdayAnswer[nb][1]);
 
-        var name = (resp2.nicknames[id] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[id] : resp[id].firstName;
-        api.sendMessage(birsdayAnswer[nb][0] + name, msg.threadID +birsdayAnswer[nb][1]);
-
-      }
+        }
+      });
     });
   };
 
@@ -101,10 +101,16 @@ login(loginConf, facebookOption, function callback(err, api) {
 
   var who = function (msg) {
     api.getThreadInfo(msg.threadID, function (err2, resp2) {
+      console.log(resp2);
       var id = resp2.participantIDs[Math.floor((Math.random() * 100)) % resp2.participantIDs.length];
 
+      var name;
       api.getUserInfo(id, function (err, resp) {
-        var name = (resp2.nicknames[id] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[id] : resp[id].firstName;
+        if (resp2.nicknames) {
+          name = (resp2.nicknames[id] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[id] : resp[id].firstName;
+        } else {
+          name = resp[id].firstName;
+        }
         api.sendMessage(name, msg.threadID);
       });
     });
@@ -117,9 +123,14 @@ login(loginConf, facebookOption, function callback(err, api) {
     api.getUserInfo(msg.senderID, function (err, resp) {
       api.getThreadInfo(msg.threadID, function (err2, resp2) {
         var nb = Math.floor((Math.random() * 100)) % insultResponse.length;
-        var name = (resp2.nicknames[msg.senderID] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[msg.senderID] : resp[msg.senderID].firstName;
-        if(resp[msg.senderID].isBirthday) {
-          var pronom = resp[msg.senderID].gender === 1? 'le' : 'la';
+        var name;
+        if (resp2.nicknames) {
+          name = (resp2.nicknames[msg.senderID] && Math.floor((Math.random() * 100) % 2)) ? resp2.nicknames[msg.senderID] : resp[msg.senderID].firstName;
+        } else {
+          name = resp[msg.senderID].firstName;
+        }
+        if (resp[msg.senderID].isBirthday) {
+          var pronom = resp[msg.senderID].gender === 1 ? 'le' : 'la';
           api.sendMessage('C\'est pas parce que c\'est ton anniversaire que t\'as le droit de faire ' + pronom + ' ouf ' + name, msg.threadID);
         } else {
           api.sendMessage(insultResponse[nb][0] + name + insultResponse[nb][1], msg.threadID);
@@ -127,12 +138,6 @@ login(loginConf, facebookOption, function callback(err, api) {
       });
     });
   };
-	
-  var gregPute = function () {
-     api.sendMessage('Ta gueule Greg', msg.threadID);
-  }; 
-
-
 
   api.listen(function callback(err, message) {
     if (!err) {

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./test/*Test.js",
+    "test": "jshint ./src/*.js *.js && mocha ./test/*Test.js",
+    "jshint": "jshint ./src/*.js *.js",
     "start": "node index.js",
     "deploy": "ansible-playbook ./ansible/playbooks/deploy.yml"
   },
